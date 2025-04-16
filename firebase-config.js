@@ -3,12 +3,13 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR-API-KEY",
-  authDomain: "YOUR-PROJECT.firebaseapp.com",
-  projectId: "YOUR-PROJECT-ID",
-  storageBucket: "YOUR-PROJECT.appspot.com",
-  messagingSenderId: "YOUR-ID",
-  appId: "YOUR-APP-ID"
+  apiKey: "AIzaSyABX6KqxfOnOMIdmY8uTYhCQLbZkDosHuM",
+  authDomain: "carnagehub.firebaseapp.com",
+  projectId: "carnagehub",
+  storageBucket: "carnagehub.firebasestorage.app",
+  messagingSenderId: "27345898203",
+  appId: "1:27345898203:web:d8ac74045d0d1c761f1afe",
+  measurementId: "G-TQM69RF9V8"
 };
 
 const app = initializeApp(firebaseConfig);
