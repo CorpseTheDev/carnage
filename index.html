@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Carnage Hub</title>
+  <title>My School Hub</title>
   <link rel="stylesheet" href="style.css">
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="script.js" defer></script>
 </head>
 <body>
   <header>
-    <h1>🏫 Carnage Hub</h1>
+    <h1>🏫 My School Hub</h1>
     <nav>
       <a href="#news">News</a>
       <a href="#schedule">Bell Schedule</a>
@@ -17,9 +19,7 @@
 
   <section id="news">
     <h2>📢 School News</h2>
-    <div id="news-container">
-      <!-- News articles go here -->
-    </div>
+    <div id="news-container"></div>
     <form id="post-news-form">
       <textarea placeholder="Write news..." required></textarea>
       <button type="submit">Post News</button>
@@ -29,9 +29,6 @@
   <section id="schedule">
     <h2>⏰ Bell Schedule</h2>
     <div id="timer">Next Period: 00:00</div>
-    <ul id="bell-list">
-      <!-- Bell periods will be listed here -->
-    </ul>
   </section>
 
   <section id="login">
@@ -42,7 +39,5 @@
       <button type="submit">Login / Signup</button>
     </form>
   </section>
-
-  <script src="script.js"></script>
 </body>
 </html>
