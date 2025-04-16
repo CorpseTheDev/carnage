@@ -1,22 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carnage Hub - Login</title>
-  <link rel="stylesheet" href="style.css" />
-  <script type="module" src="firebase-config.js"></script>
+  <meta charset="UTF-8">
+  <title>School Hub Login</title>
+  <link rel="stylesheet" href="style.css">
   <script type="module" src="script.js" defer></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #7F00FF, #E100FF);
+      color: white;
+      overflow: hidden;
+    }
+
+    .container {
+      background: white;
+      color: #333;
+      border-radius: 2rem;
+      padding: 2rem;
+      width: 320px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #7F00FF;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 1rem;
+      background: #f0f0f0;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 1rem;
+      background: #7F00FF;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #5900cc;
+    }
+
+    .switch {
+      margin-top: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="login-body">
-  <div class="login-container">
-    <h1>🎓 Carnage Hub</h1>
-    <form id="auth-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button id="auth-button" type="submit">Login</button>
-    </form>
-    <p id="toggle-mode">Don't have an account? <a href="#" id="switch-mode">Register</a></p>
+<body>
+  <div class="container" id="loginContainer">
+    <h1>Welcome Back</h1>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <div class="switch" onclick="toggleForms()">Don't have an account? Register</div>
   </div>
+
+  <div class="container" id="registerContainer" style="display: none;">
+    <h1>Create Account</h1>
+    <input type="email" id="registerEmail" placeholder="Email">
+    <input type="password" id="registerPassword" placeholder="Password">
+    <button id="registerBtn">Register</button>
+    <div class="switch" onclick="toggleForms()">Already have an account? Login</div>
+  </div>
+
+  <script>
+    function toggleForms() {
+      const login = document.getElementById("loginContainer");
+      const register = document.getElementById("registerContainer");
+      login.style.display = login.style.display === "none" ? "block" : "none";
+      register.style.display = register.style.display === "none" ? "block" : "none";
+    }
+  </script>
 </body>
 </html>
