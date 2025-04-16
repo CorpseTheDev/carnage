@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School Hub - Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="script.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>📚 School Hub</h1>
+    <nav>
+      <button class="nav-btn" data-page="news">News</button>
+      <button class="nav-btn" data-page="bell">Bell</button>
+      <button class="nav-btn" data-page="chats">Chats</button>
+      <button id="logout-btn">Logout</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="news" class="page">
+      <h2>📰 News</h2>
+      <div id="news-feed"></div>
+      <form id="news-form" style="display:none">
+        <textarea id="news-text" placeholder="Post something..." required></textarea>
+        <button type="submit">Post</button>
+      </form>
+    </section>
+
+    <section id="bell" class="page hidden">
+      <h2>⏰ Bell Schedule</h2>
+      <div id="timer-box"></div>
+    </section>
+
+    <section id="chats" class="page hidden">
+      <h2>💬 Chat Rooms</h2>
+      <form id="create-chat-form">
+        <input type="text" id="chat-name" placeholder="Chat name" required />
+        <input type="email" id="invite-email" placeholder="Invite email" required />
+        <button type="submit">Create Chat</button>
+      </form>
+      <div id="chat-list"></div>
+    </section>
+  </main>
+</body>
+</html>
