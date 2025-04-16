@@ -49,11 +49,15 @@ document.getElementById("loginBtn")?.addEventListener("click", () => {
 
 // --- BELL SCHEDULE ---
 const bellSchedule = [
-  { period: "Homeroom", start: "07:30", end: "07:45" },
-  { period: "Period 1", start: "07:50", end: "08:35" },
-  { period: "Period 2", start: "08:40", end: "09:25" },
-  { period: "Lunch", start: "11:30", end: "12:00" },
-  // Add or remove periods as needed
+  { period: "Homeroom", start: "07:00", end: "07:30" },
+  { period: "Period 1", start: "07:35", end: "08:22" },
+  { period: "Period 2", start: "08:25", end: "09:12" },
+  { period: "Period 3", start: "09:15", end: "10:02" },
+  { period: "Period 4", start: "10:05", end: "10:52" },
+  { period: "Period 5", start: "10:55", end: "11:42" },
+  { period: "Period 6", start: "11:45", end: "12:32" },
+  { period: "Period 7", start: "12:35", end: "01:22" },
+  { period: "Period 8", start: "01:25", end: "2:20" },
 ];
 
 function updateBellTimer() {
