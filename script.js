@@ -36,19 +36,17 @@ if (isIndex) {
     const email = form.email.value;
     const password = form.password.value;
 
-    try {
-      if (isLogin) {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        if (!result.user.emailVerified) {
-          alert("Please verify your email before logging in.");
-          return;
-        }
-      } else {
-        const newUser = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(newUser.user);
-        alert("Verification email sent. Please verify before logging in.");
-        return;
-      }
+try {
+  if (isLogin) {
+    await signInWithEmailAndPassword(auth, email, password);
+  } else {
+    await createUserWithEmailAndPassword(auth, email, password);
+  }
+  location.href = "app.html";
+} catch (err) {
+  alert("Error: " + err.message);
+}
+
 
       location.href = "app.html";
     } catch (err) {
