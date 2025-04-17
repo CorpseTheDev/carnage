@@ -1,120 +1,122 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { auth, db } from "./firebase-config.js";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { firebaseConfig } from './firebase-config.js';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const isIndex = location.pathname.includes("index.html") || location.pathname === "/";
 
-// --- LOGIN AND REGISTRATION ---
-document.getElementById("registerBtn")?.addEventListener("click", () => {
-  const email = document.getElementById("registerEmail").value;
-  const password = document.getElementById("registerPassword").value;
+if (isIndex) {
+  const form = document.getElementById("auth-form");
+  const switchMode = document.getElementById("switch-mode");
+  let isLogin = true;
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      user.sendEmailVerification().then(() => {
-        alert("✅ Verification email sent. Please check your inbox!");
-      });
-    })
-    .catch((error) => alert(error.message));
-});
+  switchMode.addEventListener("click", () => {
+    isLogin = !isLogin;
+    document.getElementById("auth-button").textContent = isLogin ? "Login" : "Register";
+    switchMode.textContent = isLogin ? "Register" : "Login";
+  });
 
-document.getElementById("loginBtn")?.addEventListener("click", () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      if (user.emailVerified) {
-        window.location.href = "app.html";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = form.email.value;
+    const password = form.password.value;
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
       } else {
-        alert("⚠️ Please verify your email before logging in.");
-        signOut(auth);
+        await createUserWithEmailAndPassword(auth, email, password);
       }
-    })
-    .catch((error) => alert(error.message));
-});
-
-// --- BELL SCHEDULE ---
-const bellSchedule = [
-  { period: "Homeroom", start: "07:00", end: "07:30" },
-  { period: "Period 1", start: "07:35", end: "08:22" },
-  { period: "Period 2", start: "08:25", end: "09:12" },
-  { period: "Period 3", start: "09:15", end: "10:02" },
-  { period: "Period 4", start: "10:05", end: "10:52" },
-  { period: "Period 5", start: "10:55", end: "11:42" },
-  { period: "Period 6", start: "11:45", end: "12:32" },
-  { period: "Period 7", start: "12:35", end: "01:22" },
-  { period: "Period 8", start: "01:25", end: "2:20" },
-];
-
-function updateBellTimer() {
-  const now = new Date();
-  bellSchedule.forEach((period, index) => {
-    const startTime = new Date(now.setHours(...period.start.split(":").map(Number)));
-    const endTime = new Date(now.setHours(...period.end.split(":").map(Number)));
-
-    // Check if current time is within this period
-    if (now >= startTime && now <= endTime) {
-      const remainingTime = endTime - now;
-      const minutes = Math.floor(remainingTime / 60000);
-      const seconds = Math.floor((remainingTime % 60000) / 1000);
-      document.getElementById("timer").textContent = `${minutes}m ${seconds}s remaining in ${period.period}`;
+      location.href = "app.html";
+    } catch (err) {
+      alert("Error: " + err.message);
     }
   });
-}
+} else {
+  const logoutBtn = document.getElementById("logout-btn");
+  const pages = document.querySelectorAll(".page");
 
-// --- NEWS SYSTEM (Admin only) ---
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    if (user.email === "sbanik2@students.wcpss.net") {
-      // Admin functionality to post news
-      document.getElementById("newsPostBtn")?.addEventListener("click", () => {
-        const newsContent = document.getElementById("newsContent").value;
-        addDoc(collection(db, "news"), {
-          content: newsContent,
-          timestamp: new Date()
-        }).then(() => {
-          alert("✅ News posted successfully!");
-        }).catch((error) => alert("Error posting news: " + error.message));
-      });
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      location.href = "index.html";
+      return;
     }
+    const isAdmin = user.email === "sbanik2@students.wcpss.net";
+    if (isAdmin) document.getElementById("news-form").style.display = "block";
+
+    loadNews();
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).then(() => (location.href = "index.html"));
+  });
+
+  document.querySelectorAll(".nav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      pages.forEach((p) => p.classList.add("hidden"));
+      document.getElementById(btn.dataset.page).classList.remove("hidden");
+    });
+  });
+
+  // News
+  const newsForm = document.getElementById("news-form");
+  newsForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = document.getElementById("news-text").value;
+    await addDoc(collection(db, "news"), { text, timestamp: new Date() });
+    loadNews();
+    newsForm.reset();
+  });
+
+  async function loadNews() {
+    const newsFeed = document.getElementById("news-feed");
+    newsFeed.innerHTML = "";
+    const snapshot = await getDocs(collection(db, "news"));
+    snapshot.forEach((doc) => {
+      const p = document.createElement("p");
+      p.textContent = doc.data().text;
+      newsFeed.appendChild(p);
+    });
   }
-});
 
-// --- CHAT SYSTEM (Create and invite) ---
-document.getElementById("createChatBtn")?.addEventListener("click", () => {
-  const chatName = document.getElementById("chatName").value;
-  const userEmail = document.getElementById("chatInviteEmail").value;
+  // Bell timer
+  const bellTimes = ["08:00", "09:00", "10:00", "12:00", "14:30"];
+  const timerBox = document.getElementById("timer-box");
+  setInterval(() => {
+    const now = new Date();
+    const next = bellTimes.find((time) => {
+      const [h, m] = time.split(":").map(Number);
+      const bellTime = new Date();
+      bellTime.setHours(h, m, 0);
+      return bellTime > now;
+    });
+    if (!next) return (timerBox.textContent = "Done for the day!");
+    const [nh, nm] = next.split(":").map(Number);
+    const nextTime = new Date();
+    nextTime.setHours(nh, nm, 0);
+    const diff = Math.floor((nextTime - now) / 1000);
+    const mins = Math.floor(diff / 60);
+    const secs = diff % 60;
+    timerBox.textContent = `Next Bell at ${next} in ${mins}:${secs.toString().padStart(2, "0")}`;
+  }, 1000);
 
-  addDoc(collection(db, "chats"), {
-    name: chatName,
-    createdBy: auth.currentUser.email,
-    invitedUsers: [userEmail]
-  }).then(() => {
-    alert("✅ Chat created and invitation sent!");
-  }).catch((error) => alert("Error creating chat: " + error.message));
-});
-
-// --- FIREBASE STATE CHECK ---
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // If user is logged in, show the dashboard
-    window.location.href = "app.html";
-  } else {
-    // If user isn't logged in, show login page
-    window.location.href = "index.html";
-  }
-});
+  // Chat (basic setup)
+  const chatForm = document.getElementById("create-chat-form");
+  chatForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("chat-name").value;
+    const email = document.getElementById("invite-email").value;
+    await addDoc(collection(db, "chats"), { name, invite: email });
+    alert("Chat Created!");
+    chatForm.reset();
+  });
+}
